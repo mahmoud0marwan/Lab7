@@ -10,9 +10,31 @@ public class AuthManager {
     {
         this.users=j.loadUsers();
     }
-    boolean signup(User user)
-    {
 
+    public boolean signup(User user,JsonDatabaseManager j) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
+        if (!validateEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+        for (User u : users) {
+            if (u.getEmail().equalsIgnoreCase(user.getEmail())) {
+                return false; // duplicate email → signup fails
+            }
+        }
+
+        // 4. Generate unique userId (required by the lab)
+        String newId;
+        do {
+            newId = IdGenerator.generateUserId();
+        } while (!j.isUserIdUnique(newId));
+
+        user.setUserId(newId);
+        users.add(user);
+        j.saveUsers(users);
+        return true;
     }
 
     User login(String email, String password)
