@@ -36,12 +36,12 @@ public abstract class User {
     public void setUsername(String username) {
         this.username = username;
     }
-    /*boolean authenticate(String password)
+    boolean authenticate(String password)
     {
-        String passwordH=hashPassword(password);    //a method from class AuthManager
+        String passwordH=AuthManager.hashPassword(password);    //a method from class AuthManager
         if (this.passwordHash==passwordH)
             return true;
         return false;
-    }*/
+    }
     abstract String getRole();
 }
