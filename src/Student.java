@@ -15,6 +15,7 @@ public class Student extends User{
          this.userId=userId;
          this.username=username;
          this.email=email;
+
          this.passwordHash= AuthManager.hashPassword(password);    //a method from class AuthManager
 
      }
