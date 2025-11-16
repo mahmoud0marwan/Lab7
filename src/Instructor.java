@@ -16,32 +16,36 @@ public class Instructor extends User {
     }
 
 
-    public String createCourse(String title, String description)
-    {
-        String courseId =generateCourseId();
-        Course course=new Course(courseId,this.userId,title,description);
+    public String createCourse(String title, String description,JsonDatabaseManager j) {
+        String courseId;
+        do {
+            courseId = IdGenerator.generateCourseId();
+        }
+        while (!j.isUserIdUnique(courseId));
+
+        Course course = new Course(courseId, this.userId, title, description);
         createdCourses.add(courseId);
         CourseManager.courses.add(course);
-        JsonDatabaseManager.saveCourses(CourseManager.courses);
+        j.saveCourses(CourseManager.courses);
         return courseId;
 
     }
-    public void editCourse(String courseId,String title, String description)
+    public void editCourse(String courseId,String title, String description,JsonDatabaseManager j)
     {
         Course c=CourseManager.getCourseById(courseId);
         if(c.getInstructorId==this.userId) {
             if (title == null) {
                 c.setTitle(title);
-                JsonDatabaseManager.saveCourses(CourseManager.courses);
+                j.saveCourses(CourseManager.courses);
             } else if (description == null) {
                 c.setDescription(description);
-                JsonDatabaseManager.saveCourses(CourseManager.courses);
+                j.saveCourses(CourseManager.courses);
             }
             else
             {
                 c.setTitle(title);
                 c.setDescription(description);
-                JsonDatabaseManager.saveCourses(CourseManager.courses);
+                j.saveCourses(CourseManager.courses);
             }
         }
         else

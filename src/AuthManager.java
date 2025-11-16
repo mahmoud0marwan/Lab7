@@ -5,8 +5,11 @@ import java.util.List;
 
 public class AuthManager {
 
-    private static List<User> users=JsonDatabaseManager.loadUsers();
-
+    private  List<User> users;
+    AuthManager(JsonDatabaseManager j)
+    {
+        this.users=j.loadUsers();
+    }
     boolean signup(User user)
     {
 
