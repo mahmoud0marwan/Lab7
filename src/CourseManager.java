@@ -3,7 +3,7 @@ import java.util.List;
 
 public class CourseManager {
 
-    private List<Course> courses;
+    List<Course> courses;
     JsonDatabaseManager j;
     private StudentManager studentManager;
 
