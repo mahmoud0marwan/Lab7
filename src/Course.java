@@ -74,6 +74,14 @@ public class Course {
         return students;
     }
 
+    public void setTitle(String title) {
+        this.title=title;
+    }
+
+    public void setDescription(String description) {
+        this.description=description;
+    }
+
    /* public Lesson getLessonById(String lessonId) {
         if (lessons == null) return null;
 

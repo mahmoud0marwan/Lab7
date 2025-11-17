@@ -5,8 +5,8 @@ public class CourseManager {
 
     private List<Course> courses;
 
-    public CourseManager() {
-        this.courses = new ArrayList<>();
+    public CourseManager(JsonDatabaseManager j) {
+        this.courses = j.loadCourses();
     }
 
     public Course getCourseById(String id) {
@@ -66,4 +66,7 @@ public class CourseManager {
                 course.deleteLesson(lessonId);
             }
         }
+    public void addCourse(Course course)
+    {
+        this.courses.add(course);    }
     }
