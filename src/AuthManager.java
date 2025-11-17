@@ -6,17 +6,12 @@ import java.util.List;
 public class AuthManager {
 
     private  List<User> users;
-    private User currentUser;
-    JsonDatabaseManager j;
     AuthManager(JsonDatabaseManager j)
     {
-        this.j=j;
         this.users=j.loadUsers();
     }
 
     public boolean signup(User user,JsonDatabaseManager j) {
-        this.users = j.loadUsers();
-
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null");
         }
@@ -26,13 +21,15 @@ public class AuthManager {
         }
         for (User u : users) {
             if (u.getEmail().equalsIgnoreCase(user.getEmail())) {
-                return false;
+                return false; // duplicate email → signup fails
             }
         }
+
         String newId;
         do {
             newId = IdGenerator.generateUserId();
         } while (!j.isUserIdUnique(newId));
+
         user.setUserId(newId);
         users.add(user);
         j.saveUsers(users);
@@ -41,35 +38,36 @@ public class AuthManager {
 
     User login(String email, String password)
     {
-        this.users = j.loadUsers();
         User user=null;
         boolean found=false;
         for (int i=0;i<users.size();i++)
         {
-            if (users.get(i).getEmail().equalsIgnoreCase(email))
+            if (users.get(i).getEmail()==email)
             {
                 found=true;
                 user=users.get(i);
             }
         }
-        if (found==false||!verifyPassword(password,user.getPasswordHash()))
+        if (found==false||!verifyPassword(password,user.passwordHash))
         {
             throw new IllegalArgumentException("wrong email or password");
         }
-        else {
-            currentUser = user;
+        else
             return user;
-        }
+
     }
 
-    public void logout() {
-        currentUser = null;
+    void logout()
+    {
+
     }
 
     boolean validateEmail(String email)
     {
-        return email != null && email.contains("@") && email.contains(".");
-
+        if(email.contains("@")&&email.contains("."))
+            return true;
+        else
+            return false;
     }
     public static String hashPassword(String password) {
         if (password == null || password.isEmpty()) {

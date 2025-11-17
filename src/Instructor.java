@@ -4,8 +4,10 @@ import java.util.List;
 public class Instructor extends User {
 
     private List<String>createdCourses=new ArrayList<>();
+
     JsonDatabaseManager j=new JsonDatabaseManager("users.json","courses.json");
     CourseManager courseManager=new CourseManager(j);
+
     Instructor(String userId,String username,String email,String password)
     {
         super();
@@ -26,27 +28,28 @@ public class Instructor extends User {
 
         Course course = new Course(courseId, this.userId, title, description);
         createdCourses.add(courseId);
-        courseManager.addCourse(course);
-        j.saveCourses(courseManager.getAllCourses());
+        CourseManager.courses.add(course);
+        j.saveCourses(CourseManager.courses);
         return courseId;
 
     }
     public void editCourse(String courseId,String title, String description,JsonDatabaseManager j)
     {
-        Course c=courseManager.getCourseById(courseId);
-        if(c.getInstructorId()==this.userId) {
-            if (title == null) {
+        Course c=CourseManager.getCourseById(courseId);
+        if (c.getInstructorId().equals(this.userId))
+        {
+            if (title != null){
                 c.setTitle(title);
-                j.saveCourses(courseManager.getAllCourses());
-            } else if (description == null) {
+                j.saveCourses(CourseManager.courses);
+            } else if (description != null) {
                 c.setDescription(description);
-                j.saveCourses(courseManager.getAllCourses());
+                j.saveCourses(CourseManager.courses);
             }
             else
             {
                 c.setTitle(title);
                 c.setDescription(description);
-                j.saveCourses(courseManager.getAllCourses());
+                j.saveCourses(CourseManager.courses);
             }
         }
         else
@@ -54,22 +57,20 @@ public class Instructor extends User {
     }
     public void addLesson(String courseId, Lesson lesson)
     {
-      courseManager.addLesson(courseId,lesson);
+      Course.addLesson(courseId,lesson);
     }
     public void editLesson(String courseId, Lesson updatedLesson)
     {
-      courseManager.editLesson(courseId,updatedLesson);
-      j.saveCourses(courseManager.getAllCourses());
+      Course.editLesson(courseId,updatedLesson); //this method should save
     }
     public void deleteLesson(String courseId, String lessonId)
     {
-     courseManager.removeLesson(courseId,lessonId);
-     j.saveCourses(courseManager.getAllCourses());
+     Course.removeLesson(courseId,lessonId);  //this method should save
     }
     List<Student> viewEnrolledStudents(String courseId)
     {
-        Course c=courseManager.getCourseById(courseId);
-        return c.getStudents();
+        Course c=CourseManager.getCourseById(courseId);
+        return c.getStudents;
     }
     String getRole()
     {
