@@ -5,9 +5,29 @@ public class CourseManager {
 
     private List<Course> courses;
     JsonDatabaseManager j;
+    private StudentManager studentManager;
+
     public CourseManager(JsonDatabaseManager j) {
+        this.j = j;
         this.courses = j.loadCourses();
-        this.j=j;
+    }
+
+    public CourseManager(JsonDatabaseManager j, StudentManager studentManager) {
+        this.j = j;
+        this.studentManager = studentManager;
+        this.courses = j.loadCourses();
+
+        for (Course course : courses) {
+            course.setStudentManager(studentManager);
+        }
+    }
+
+    public void setStudentManager(StudentManager studentManager) {
+        this.studentManager = studentManager;
+
+        for (Course course : courses) {
+            course.setStudentManager(studentManager);
+        }
     }
 
     public Course getCourseById(String id) {
@@ -20,17 +40,18 @@ public class CourseManager {
     }
 
     public List<Course> getAllCourses() {
-        return courses;
+        return new ArrayList<>(courses);
     }
 
-    public String createCourse( String instructorId , String title, String description) {
+    public String createCourse(String instructorId, String title, String description) {
         String courseId = IdGenerator.generateCourseId();
         if (getCourseById(courseId) != null) {
             return null;
         }
 
-        Course newCourse = new Course(courseId, instructorId, title, description);
+        Course newCourse = new Course(courseId, instructorId, title, description, studentManager);
         courses.add(newCourse);
+        j.saveCourses(courses);
         return courseId;
     }
 
@@ -51,12 +72,15 @@ public class CourseManager {
         return courses.removeIf(c -> c.getCourseId().equals(courseId));
         }
 
-        public void addLesson(String courseId, Lesson lesson) {
-            Course course = getCourseById(courseId);
-            if (course != null) {
-                course.addLesson(lesson);
-            }
+    public void addLesson(String courseId, Lesson lesson) {
+        Course course = getCourseById(courseId);
+        if (course != null) {
+            course.addLesson(lesson);
+            j.saveCourses(courses);
+        } else {
+            throw new IllegalArgumentException("Course not found: " + courseId);
         }
+    }
 
         public void editLesson(String courseId, Lesson lesson) {
             Course course = getCourseById(courseId);
@@ -77,5 +101,8 @@ public class CourseManager {
     {
         this.courses.add(course);
         j.saveCourses(courses);
+    }
+    public StudentManager getStudentManager() {
+        return studentManager;
     }
     }

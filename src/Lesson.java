@@ -3,8 +3,8 @@ import java.util.List;
 
 public class Lesson {
 
-    String lessonId;
-	String title;
+    private String lessonId;
+    String title;
 	String content;
 	List<String> resources;
 
@@ -57,7 +57,5 @@ public class Lesson {
     public void addResource(String resource) {
         this.resources.add(resource);
     }
-
-
 
 }

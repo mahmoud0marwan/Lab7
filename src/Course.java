@@ -9,20 +9,19 @@ public class Course {
     String description;
     List<Lesson> lessons;
     List<Student> students;
-    private static StudentManager studentManager;
-    public Course(String courseId, String instructorId, String title, String description) {
+    private StudentManager studentManager;
+    public Course(String courseId, String instructorId, String title, String description,StudentManager studentManager) {
         this.courseId = courseId;
         this.instructorId = instructorId;
         this.title = title;
         this.description = description;
         this.lessons = new ArrayList<>();
         this.students = new ArrayList<>();
+        this.studentManager = studentManager;
     }
-
-    public static void setStudentManager(StudentManager studentManager) {
-        Course.studentManager = studentManager;
+    public void setStudentManager(StudentManager studentManager) {
+        this.studentManager = studentManager;
     }
-
     public void addLesson(Lesson lesson) {
         lessons.add(lesson);
     }
@@ -40,12 +39,15 @@ public class Course {
     }
 
     public void enrollStudent(String studentId) {
-
         for (Student s : students) {
-            if (s.getUserId().equals(studentId)) return ;
+            if (s.getUserId().equals(studentId)) return;
         }
-        students.add((Student)studentManager.db.getUserById(studentId));
-
+        User user = studentManager.db.getUserById(studentId);
+        if (user instanceof Student) {
+            students.add((Student) user);
+        } else {
+            throw new IllegalArgumentException("User is not a student: " + studentId);
+        }
     }
 
     public Lesson getLessonById(String lessonId) {
@@ -87,13 +89,11 @@ public class Course {
     public void setDescription(String description) {
         this.description=description;
     }
-    public boolean isEnrolled(String studentId)
-    {
-        for(int i=0;i<students.size();i++)
-        {
-            if (students.get(i).getUserId().equals(studentId))
+    public boolean isEnrolled(String studentId) {
+        for (Student student : students) {
+            if (student.getUserId().equals(studentId))
                 return true;
         }
         return false;
     }
-}
+    }

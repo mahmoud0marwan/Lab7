@@ -6,12 +6,14 @@ import java.util.List;
 public class AuthManager {
 
     private  List<User> users;
-    AuthManager(JsonDatabaseManager j)
-    {
-        this.users=j.loadUsers();
+    private JsonDatabaseManager j;
+
+    public AuthManager(JsonDatabaseManager j) {
+        this.j = j;
+        this.users = j.loadUsers();
     }
 
-    public boolean signup(User user,JsonDatabaseManager j) {
+    public boolean signup(User user) {
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null");
         }
@@ -21,7 +23,7 @@ public class AuthManager {
         }
         for (User u : users) {
             if (u.getEmail().equalsIgnoreCase(user.getEmail())) {
-                return false; // duplicate email → signup fails
+                return false;
             }
         }
 
@@ -36,25 +38,17 @@ public class AuthManager {
         return true;
     }
 
-    User login(String email, String password)
-    {
-        User user=null;
-        boolean found=false;
-        for (int i=0;i<users.size();i++)
-        {
-            if (users.get(i).getEmail()==email)
-            {
-                found=true;
-                user=users.get(i);
+    public User login(String email, String password) {
+        for (User u : users) {
+            if (u.getEmail().equalsIgnoreCase(email)) {
+                if (verifyPassword(password, u.getPasswordHash())) {
+                    return u;
+                } else {
+                    throw new IllegalArgumentException("Wrong email or password");
+                }
             }
         }
-        if (found==false||!verifyPassword(password,user.passwordHash))
-        {
-            throw new IllegalArgumentException("wrong email or password");
-        }
-        else
-            return user;
-
+        throw new IllegalArgumentException("Wrong email or password");
     }
 
     void logout()

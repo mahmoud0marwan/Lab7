@@ -7,22 +7,21 @@ import java.util.Map;
 public class Student extends User{
      private List<String> enrolledCourses= new ArrayList<>();
      private Map<String,Integer> progress=new HashMap<>();
-     private static CourseManager courseManager;
-     Student(String userId,String username,String email,String password)
+     private CourseManager courseManager;
+     Student(String userId,String username,String email,String password,CourseManager courseManager)
      {
          super();
          this.role="Student";
          this.userId=userId;
          this.username=username;
          this.email=email;
-
+         this.courseManager = courseManager;
          this.passwordHash= AuthManager.hashPassword(password);    //a method from class AuthManager
 
      }
-    public static void setCourseManager(CourseManager courseManager) {
-        Student.courseManager = courseManager;
+    public void setCourseManager(CourseManager courseManager) {
+        this.courseManager = courseManager;
     }
-
      public void enrollCourse(String courseId)
      {
          if(courseId==null||courseId.trim().isEmpty())
@@ -61,24 +60,22 @@ public class Student extends User{
     }
 
 
-    List<Course> viewEnrolledCourses()
-    {
-        List<Course> courses=courseManager.getAllCourses();
-        List<Course> enrolled=new ArrayList<>();
-        for(int i=0;i<courses.size();i++)
-        {
-            if(courses.get(i).isEnrolled(this.userId))
-                enrolled.add(courses.get(i));
+    List<Course> viewEnrolledCourses() {
+        List<Course> allCourses = courseManager.getAllCourses();
+        List<Course> enrolled = new ArrayList<>();
+        for (Course course : allCourses) {
+            if (course.isEnrolled(this.userId))
+                enrolled.add(course);
         }
         return enrolled;
     }
 
 
-    public String getEnrolledCourses() {
+    public List<String> getEnrolledCourses() {
         if (enrolledCourses == null || enrolledCourses.isEmpty()) {
-            return "";
+            return new ArrayList<>();
         }
-        return String.join(", ", enrolledCourses);
+        return new ArrayList<>(enrolledCourses);
     }
 
     public Map<String, Integer> getProgress() {

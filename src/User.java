@@ -36,12 +36,9 @@ public abstract class User {
     public void setUsername(String username) {
         this.username = username;
     }
-    boolean authenticate(String password)
-    {
-        String passwordH=AuthManager.hashPassword(password);
-        if (this.passwordHash.equals(passwordH))
-            return true;
-        return false;
+    boolean authenticate(String password) {
+        String passwordH = AuthManager.hashPassword(password);
+        return this.passwordHash.equals(passwordH);
     }
     public void setRole(String role){ this.role = role; }
 
