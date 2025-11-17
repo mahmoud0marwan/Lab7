@@ -33,11 +33,12 @@ public class Instructor extends User {
     public void editCourse(String courseId,String title, String description,JsonDatabaseManager j)
     {
         Course c=CourseManager.getCourseById(courseId);
-        if(c.getInstructorId==this.userId) {
-            if (title == null) {
+        if (c.getInstructorId().equals(this.userId))
+        {
+            if (title != null){
                 c.setTitle(title);
                 j.saveCourses(CourseManager.courses);
-            } else if (description == null) {
+            } else if (description != null) {
                 c.setDescription(description);
                 j.saveCourses(CourseManager.courses);
             }

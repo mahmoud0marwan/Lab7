@@ -25,7 +25,6 @@ public class AuthManager {
             }
         }
 
-        // 4. Generate unique userId (required by the lab)
         String newId;
         do {
             newId = IdGenerator.generateUserId();
