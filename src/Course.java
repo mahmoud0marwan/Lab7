@@ -44,7 +44,8 @@ public class Course {
         for (Student s : students) {
             if (s.getUserId().equals(studentId)) return ;
         }
-        studentManager.enrollInCourse(studentId,this.courseId);
+        students.add((Student)studentManager.db.getUserById(studentId));
+
     }
 
     public Lesson getLessonById(String lessonId) {
@@ -90,7 +91,7 @@ public class Course {
     {
         for(int i=0;i<students.size();i++)
         {
-            if (students.get(i).getUserId()==studentId)
+            if (students.get(i).getUserId().equals(studentId))
                 return true;
         }
         return false;

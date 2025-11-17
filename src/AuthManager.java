@@ -7,12 +7,16 @@ public class AuthManager {
 
     private  List<User> users;
     private User currentUser;
+    JsonDatabaseManager j;
     AuthManager(JsonDatabaseManager j)
     {
+        this.j=j;
         this.users=j.loadUsers();
     }
 
     public boolean signup(User user,JsonDatabaseManager j) {
+        this.users = j.loadUsers();
+
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null");
         }
@@ -22,16 +26,13 @@ public class AuthManager {
         }
         for (User u : users) {
             if (u.getEmail().equalsIgnoreCase(user.getEmail())) {
-                return false; // duplicate email → signup fails
+                return false;
             }
         }
-
-        // 4. Generate unique userId (required by the lab)
         String newId;
         do {
             newId = IdGenerator.generateUserId();
         } while (!j.isUserIdUnique(newId));
-
         user.setUserId(newId);
         users.add(user);
         j.saveUsers(users);
@@ -40,17 +41,18 @@ public class AuthManager {
 
     User login(String email, String password)
     {
+        this.users = j.loadUsers();
         User user=null;
         boolean found=false;
         for (int i=0;i<users.size();i++)
         {
-            if (users.get(i).getEmail()==email)
+            if (users.get(i).getEmail().equalsIgnoreCase(email))
             {
                 found=true;
                 user=users.get(i);
             }
         }
-        if (found==false||!verifyPassword(password,user.passwordHash))
+        if (found==false||!verifyPassword(password,user.getPasswordHash()))
         {
             throw new IllegalArgumentException("wrong email or password");
         }
@@ -66,10 +68,8 @@ public class AuthManager {
 
     boolean validateEmail(String email)
     {
-        if(email.contains("@")&&email.contains("."))
-            return true;
-        else
-            return false;
+        return email != null && email.contains("@") && email.contains(".");
+
     }
     public static String hashPassword(String password) {
         if (password == null || password.isEmpty()) {

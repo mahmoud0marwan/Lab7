@@ -2,7 +2,7 @@ import java.util.List;
 
 public class StudentManager {
 
-    private final JsonDatabaseManager db;
+    public final JsonDatabaseManager db;
     private final CourseManager courseManager;
 
     public StudentManager(JsonDatabaseManager db, CourseManager courseManager) {

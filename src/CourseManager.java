@@ -4,9 +4,10 @@ import java.util.List;
 public class CourseManager {
 
     private List<Course> courses;
-
+    JsonDatabaseManager j;
     public CourseManager(JsonDatabaseManager j) {
         this.courses = j.loadCourses();
+        this.j=j;
     }
 
     public Course getCourseById(String id) {
@@ -22,7 +23,8 @@ public class CourseManager {
         return courses;
     }
 
-    public String createCourse(String courseId , String instructorId , String title, String description) {
+    public String createCourse( String instructorId , String title, String description) {
+        String courseId = IdGenerator.generateCourseId();
         if (getCourseById(courseId) != null) {
             return null;
         }
@@ -36,14 +38,17 @@ public class CourseManager {
         for (int i=0 ; i<courses.size() ; i++){
             if (courses.get(i).getCourseId().equals(updatedCourse.getCourseId())) {
             courses.set(i,updatedCourse);
+                j.saveCourses(courses);
             return true;
             }
-            }
+
+        }
         return false;
         }
 
         public boolean deleteCourse(String courseId) {
-            return courses.removeIf(c -> c.getCourseId().equals(courseId));
+
+        return courses.removeIf(c -> c.getCourseId().equals(courseId));
         }
 
         public void addLesson(String courseId, Lesson lesson) {
@@ -57,6 +62,7 @@ public class CourseManager {
             Course course = getCourseById(courseId);
             if (course != null) {
                 course.updateLesson(lesson);
+                j.saveCourses(courses);
             }
         }
 
@@ -64,9 +70,12 @@ public class CourseManager {
             Course course = getCourseById(courseId);
             if (course != null) {
                 course.deleteLesson(lessonId);
+                j.saveCourses(courses);
             }
         }
     public void addCourse(Course course)
     {
-        this.courses.add(course);    }
+        this.courses.add(course);
+        j.saveCourses(courses);
+    }
     }
