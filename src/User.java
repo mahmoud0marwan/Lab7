@@ -1,9 +1,19 @@
+import com.google.gson.annotations.Expose;
+
 public abstract class User {
+    @Expose
     protected String userId;
+    @Expose
     protected String username;
+    @Expose
     protected String email;
+    @Expose
     protected String passwordHash;
+    @Expose
     protected String role;
+
+    public User() {
+    }
 
     public String getEmail() {
         return email;
@@ -36,11 +46,17 @@ public abstract class User {
     public void setUsername(String username) {
         this.username = username;
     }
-    boolean authenticate(String password) {
+
+    public boolean authenticate(String password) {
         String passwordH = AuthManager.hashPassword(password);
         return this.passwordHash.equals(passwordH);
     }
-    public void setRole(String role){ this.role = role; }
 
-    abstract String getRole();
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getRole() {
+        return role;
+    }
 }

@@ -2,15 +2,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Course {
+    private String courseId;
+    private String instructorId;
+    private String title;
+    private String description;
+    private List<Lesson> lessons;
+    private List<Student> students;
+    private transient StudentManager studentManager;
 
-    String courseId;
-    String instructorId;
-    String title;
-    String description;
-    List<Lesson> lessons;
-    List<Student> students;
-    private StudentManager studentManager;
-    public Course(String courseId, String instructorId, String title, String description,StudentManager studentManager) {
+    public Course(String courseId, String instructorId, String title, String description, StudentManager studentManager) {
         this.courseId = courseId;
         this.instructorId = instructorId;
         this.title = title;
@@ -19,9 +19,11 @@ public class Course {
         this.students = new ArrayList<>();
         this.studentManager = studentManager;
     }
+
     public void setStudentManager(StudentManager studentManager) {
         this.studentManager = studentManager;
     }
+
     public void addLesson(Lesson lesson) {
         lessons.add(lesson);
     }
@@ -30,6 +32,7 @@ public class Course {
         for (int i = 0; i < lessons.size(); i++) {
             if (lessons.get(i).getLessonId().equals(lesson.getLessonId())) {
                 lessons.set(i, lesson);
+                return;
             }
         }
     }
@@ -75,20 +78,21 @@ public class Course {
     }
 
     public List<Lesson> getLessons() {
-        return lessons;
+        return new ArrayList<>(lessons);
     }
 
     public List<Student> getStudents() {
-        return students;
+        return new ArrayList<>(students);
     }
 
     public void setTitle(String title) {
-        this.title=title;
+        this.title = title;
     }
 
     public void setDescription(String description) {
-        this.description=description;
+        this.description = description;
     }
+
     public boolean isEnrolled(String studentId) {
         for (Student student : students) {
             if (student.getUserId().equals(studentId))
@@ -96,4 +100,4 @@ public class Course {
         }
         return false;
     }
-    }
+}

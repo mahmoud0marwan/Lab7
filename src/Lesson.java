@@ -2,11 +2,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Lesson {
-
     private String lessonId;
-    String title;
-	String content;
-	List<String> resources;
+    private String title;
+    private String content;
+    private List<String> resources;
 
     public Lesson(String lessonId, String title, String content) {
         this.lessonId = lessonId;
@@ -19,7 +18,7 @@ public class Lesson {
         this.lessonId = lessonId;
         this.title = title;
         this.content = content;
-        this.resources = resources != null ? resources : new ArrayList<>();
+        this.resources = resources != null ? new ArrayList<>(resources) : new ArrayList<>();
     }
 
     public String getLessonId() {
@@ -47,15 +46,14 @@ public class Lesson {
     }
 
     public List<String> getResources() {
-        return resources;
+        return new ArrayList<>(resources);
     }
 
     public void setResources(List<String> resources) {
-        this.resources = resources;
+        this.resources = resources != null ? new ArrayList<>(resources) : new ArrayList<>();
     }
 
     public void addResource(String resource) {
         this.resources.add(resource);
     }
-
 }

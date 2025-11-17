@@ -1,7 +1,8 @@
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,59 +10,107 @@ public class JsonDatabaseManager {
     private final String usersFile;
     private final String coursesFile;
     private final Gson gson;
+    private CourseManager courseManager;
 
     public JsonDatabaseManager(String usersFilePath, String coursesFilePath) {
         this.usersFile = usersFilePath;
         this.coursesFile = coursesFilePath;
-        this.gson = new GsonBuilder().setPrettyPrinting().create();
+
+        // FIX: Custom Deserializer handles the Abstract User class
+        JsonDeserializer<User> userDeserializer = (json, typeOfT, context) -> {
+            JsonObject jsonObject = json.getAsJsonObject();
+            JsonElement roleElement = jsonObject.get("role");
+
+            if (roleElement == null) {
+                throw new JsonParseException("User object missing 'role' field.");
+            }
+
+            String role = roleElement.getAsString();
+
+            // Check role and return specific subclass
+            if ("Student".equalsIgnoreCase(role)) {
+                return context.deserialize(json, Student.class);
+            } else if ("Instructor".equalsIgnoreCase(role)) {
+                return context.deserialize(json, Instructor.class);
+            } else {
+                throw new JsonParseException("Unknown role: " + role);
+            }
+        };
+
+        this.gson = new GsonBuilder()
+                .setPrettyPrinting()
+                // We do NOT use .excludeFieldsWithoutExposeAnnotation() because
+                // Student and Instructor fields (like enrolledCourses) do not have @Expose tags.
+                .registerTypeAdapter(User.class, userDeserializer)
+                .create();
+
         createFileIfMissing(usersFile);
         createFileIfMissing(coursesFile);
+    }
+
+    public void setCourseManager(CourseManager courseManager) {
+        this.courseManager = courseManager;
     }
 
     private void createFileIfMissing(String filePath) {
         try {
             java.io.File file = new java.io.File(filePath);
             if (!file.exists()) {
-                FileWriter writer = new FileWriter(file);
-                writer.write("[]");
-                writer.close();
+                java.io.File parent = file.getParentFile();
+                if (parent != null && !parent.exists()) {
+                    parent.mkdirs();
+                }
+                file.createNewFile();
+                try (FileWriter writer = new FileWriter(filePath)) {
+                    writer.write("[]");
+                }
+                System.out.println("Created file: " + filePath);
             }
         } catch (Exception e) {
-            System.out.println("Error creating file: " + filePath);
+            System.err.println("Error creating file " + filePath + ": " + e.getMessage());
         }
     }
 
     public List<User> loadUsers() {
-        try {
-            FileReader reader = new FileReader(usersFile);
-            User[] arr = gson.fromJson(reader, User[].class);
-            reader.close();
-            List<User> list = new ArrayList<>();
-            if (arr != null) {
-                for (User u : arr) {
-                    list.add(u);
+        try (FileReader reader = new FileReader(usersFile)) {
+            Type listType = new TypeToken<List<User>>(){}.getType();
+            List<User> users = gson.fromJson(reader, listType);
+
+            if (users == null) {
+                return new ArrayList<>();
+            }
+
+            // Re-inject CourseManager into loaded users
+            if (courseManager != null) {
+                for (User user : users) {
+                    if (user instanceof Student) {
+                        ((Student) user).setCourseManager(courseManager);
+                    } else if (user instanceof Instructor) {
+                        ((Instructor) user).setCourseManager(courseManager);
+                    }
                 }
             }
-            return list;
+
+            return users;
         } catch (Exception e) {
+            // If file is empty or corrupt, return empty list to start fresh
+            System.err.println("Warning: Could not load users (" + e.getMessage() + "). Starting with empty list.");
             return new ArrayList<>();
         }
     }
 
     public void saveUsers(List<User> users) {
-        try {
-            FileWriter writer = new FileWriter(usersFile);
+        try (FileWriter writer = new FileWriter(usersFile)) {
             gson.toJson(users, writer);
-            writer.close();
         } catch (Exception e) {
-            System.out.println("Error saving users.");
+            System.err.println("Error saving users to " + usersFile + ": " + e.getMessage());
         }
     }
 
     public boolean isUserIdUnique(String userId) {
         List<User> users = loadUsers();
         for (User u : users) {
-            if (u.getUserId().equals(userId)) {
+            if (u.getUserId() != null && u.getUserId().equals(userId)) {
                 return false;
             }
         }
@@ -69,62 +118,41 @@ public class JsonDatabaseManager {
     }
 
     public List<Course> loadCourses() {
-        try {
-            FileReader reader = new FileReader(coursesFile);
-            Course[] arr = gson.fromJson(reader, Course[].class);
-            reader.close();
-            List<Course> list = new ArrayList<>();
-            if (arr != null) {
-                for (Course c : arr) {
-                    list.add(c);
-                }
-            }
-            return list;
+        try (FileReader reader = new FileReader(coursesFile)) {
+            Type listType = new TypeToken<List<Course>>(){}.getType();
+            List<Course> courses = gson.fromJson(reader, listType);
+            return courses != null ? courses : new ArrayList<>();
         } catch (Exception e) {
+            System.err.println("Error loading courses: " + e.getMessage());
             return new ArrayList<>();
         }
     }
 
     public void saveCourses(List<Course> courses) {
-        try {
-            FileWriter writer = new FileWriter(coursesFile);
+        try (FileWriter writer = new FileWriter(coursesFile)) {
             gson.toJson(courses, writer);
-            writer.close();
         } catch (Exception e) {
-            System.out.println("Error saving courses.");
+            System.err.println("Error saving courses: " + e.getMessage());
         }
-    }
-
-    public boolean isCourseIdUnique(String courseId) {
-        List<Course> courses = loadCourses();
-        for (Course c : courses) {
-            if (c.getCourseId().equals(courseId)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public User getUserById(String userId) {
         List<User> users = loadUsers();
-
         for (User u : users) {
-            if (u.getUserId().equals(userId)) {
+            if (u.getUserId() != null && u.getUserId().equals(userId)) {
                 return u;
             }
         }
         return null;
     }
-    public Course getCourseById(String courseId) {
-        List<Course> courses = loadCourses();
 
-        for (Course c : courses) {
-            if (c.getCourseId().equals(courseId)) {
-                return c;
+    public User getUserByEmail(String email) {
+        List<User> users = loadUsers();
+        for (User u : users) {
+            if (u.getEmail() != null && u.getEmail().equalsIgnoreCase(email)) {
+                return u;
             }
         }
         return null;
     }
-
 }
-
