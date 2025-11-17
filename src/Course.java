@@ -73,4 +73,16 @@ public class Course {
     public List<Student> getStudents() {
         return students;
     }
+
+    public Lesson getLessonById(String lessonId) {
+        if (lessons == null) return null;
+
+        for (Lesson lesson : lessons) {
+            if (lesson.getLessonId().equals(lessonId)) {
+                return lesson;
+            }
+        }
+        return null;
+    }
+
 }
