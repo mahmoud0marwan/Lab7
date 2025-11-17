@@ -80,7 +80,6 @@ public class AuthManager {
             byte[] hashBytes = digest.digest(password.getBytes(StandardCharsets.UTF_8));
             return bytesToHex(hashBytes);
         } catch (NoSuchAlgorithmException e) {
-            // SHA-256 is required by the JDK spec and should always be present.
             throw new RuntimeException("SHA-256 algorithm not available", e);
         }
     }
