@@ -18,7 +18,7 @@ public class StudentManager {
 
         User user = db.getUserById(studentId);
         if (user == null || !(user instanceof Student)) {
-            throw new RuntimeException("Student "+ studentId +" not found" );
+            throw new RuntimeException("Student " + studentId +" not found" + studentId);
         }
         Student student = (Student) user;
 
@@ -39,7 +39,7 @@ public class StudentManager {
         db.saveUsers(db.loadUsers());
         db.saveCourses(db.loadCourses());
     }
-    
+
     public void markLessonCompleted(String studentId, String courseId, String lessonId) {
 
         User user = db.getUserById(studentId);
@@ -59,10 +59,10 @@ public class StudentManager {
 
         Lesson lesson = course.getLessonById(lessonId);
         if (lesson == null) {
-            throw new RuntimeException("Lesson " + lessonId +" not found" );
+            throw new RuntimeException("Lesson " + lessonId+" not found" );
         }
 
-        int completedLessons = student.getProgress().getOrDefault(courseId, 0);
+        int completedLessons = student.getProgress().getOrDefault(courseId,0);
 
         student.getProgress().put(courseId, completedLessons + 1);
 
