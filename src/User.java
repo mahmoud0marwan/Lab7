@@ -39,9 +39,11 @@ public abstract class User {
     boolean authenticate(String password)
     {
         String passwordH=AuthManager.hashPassword(password);
-        if (this.passwordHash==passwordH)
+        if (this.passwordHash.equals(passwordH))
             return true;
         return false;
     }
+    public void setRole(String role){ this.role = role; }
+
     abstract String getRole();
 }

@@ -66,6 +66,8 @@ public class StudentManager {
 
         student.getProgress().put(courseId, completedLessons + 1);
 
-        db.saveUsers(db.loadUsers());
+        List<User> users = db.loadUsers();
+        db.saveUsers(users);
+
     }
 }
