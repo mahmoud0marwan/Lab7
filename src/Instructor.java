@@ -4,7 +4,7 @@ import java.util.List;
 public class Instructor extends User {
 
     private List<String>createdCourses=new ArrayList<>();
-    JsonDatabaseManager j=new JsonDatabaseManager(null,null);
+    JsonDatabaseManager j=new JsonDatabaseManager("users.json","courses.json");
     CourseManager courseManager=new CourseManager(j);
     Instructor(String userId,String username,String email,String password)
     {
