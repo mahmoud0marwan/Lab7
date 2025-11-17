@@ -74,7 +74,7 @@ public class Course {
         return students;
     }
 
-    public Lesson getLessonById(String lessonId) {
+   /* public Lesson getLessonById(String lessonId) {
         if (lessons == null) return null;
 
         for (Lesson lesson : lessons) {
@@ -83,6 +83,6 @@ public class Course {
             }
         }
         return null;
-    }
+    }*/
 
 }
