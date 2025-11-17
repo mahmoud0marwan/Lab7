@@ -104,4 +104,37 @@ public class JsonDatabaseManager {
         }
         return true;
     }
+
+    public User getUserById(String userId) {
+        List<User> users = loadUsers();
+
+        for (User u : users) {
+            if (u.getUserId().equals(userId)) {
+                return u;
+            }
+        }
+        return null;
+    }
+    public Course getCourseById(String courseId) {
+        List<Course> courses = loadCourses();
+
+        for (Course c : courses) {
+            if (c.getCourseId().equals(courseId)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
 }
+public User getUserById(String userId) {
+    List<User> users = loadUsers();
+
+    for (User u : users) {
+        if (u.getUserId().equals(userId)) {
+            return u;
+        }
+    }
+    return null;
+}
+

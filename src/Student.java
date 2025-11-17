@@ -56,6 +56,7 @@ public class Student extends User{
     {
         return this.role;
     }
+
     /*
     List<Course> viewEnrolledCourses()
     {
@@ -63,4 +64,16 @@ public class Student extends User{
 
     }
      */
+
+    public String getEnrolledCourses() {
+        if (enrolledCourses == null || enrolledCourses.isEmpty()) {
+            return "";
+        }
+        return String.join(", ", enrolledCourses);
+    }
+
+    public Map<String, Integer> getProgress() {
+        return progress;
+    }
+
 }
