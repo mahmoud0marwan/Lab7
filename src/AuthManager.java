@@ -6,6 +6,7 @@ import java.util.List;
 public class AuthManager {
 
     private  List<User> users;
+    private User currentUser;
     AuthManager(JsonDatabaseManager j)
     {
         this.users=j.loadUsers();
@@ -53,14 +54,14 @@ public class AuthManager {
         {
             throw new IllegalArgumentException("wrong email or password");
         }
-        else
+        else {
+            currentUser = user;
             return user;
-
+        }
     }
 
-    void logout()
-    {
-
+    public void logout() {
+        currentUser = null;
     }
 
     boolean validateEmail(String email)

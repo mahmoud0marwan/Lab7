@@ -38,7 +38,7 @@ public abstract class User {
     }
     boolean authenticate(String password)
     {
-        String passwordH=AuthManager.hashPassword(password);    //a method from class AuthManager
+        String passwordH=AuthManager.hashPassword(password);
         if (this.passwordHash==passwordH)
             return true;
         return false;
