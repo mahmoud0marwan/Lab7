@@ -7,7 +7,7 @@ import java.util.Map;
 public class Student extends User{
      private List<String> enrolledCourses= new ArrayList<>();
      private Map<String,Integer> progress=new HashMap<>();
-
+     private static CourseManager courseManager;
      Student(String userId,String username,String email,String password)
      {
          super();
@@ -19,6 +19,9 @@ public class Student extends User{
          this.passwordHash= AuthManager.hashPassword(password);    //a method from class AuthManager
 
      }
+    public static void setCourseManager(CourseManager courseManager) {
+        Student.courseManager = courseManager;
+    }
 
      public void enrollCourse(String courseId)
      {
@@ -57,13 +60,19 @@ public class Student extends User{
         return this.role;
     }
 
-    /*
+
     List<Course> viewEnrolledCourses()
     {
-                        //needs to be implemented after CourseManager Class
-
+        List<Course> courses=courseManager.getAllCourses();
+        List<Course> enrolled=new ArrayList<>();
+        for(int i=0;i<courses.size();i++)
+        {
+            if(courses.get(i).isEnrolled(this.userId))
+                enrolled.add(courses.get(i));
+        }
+        return enrolled;
     }
-     */
+
 
     public String getEnrolledCourses() {
         if (enrolledCourses == null || enrolledCourses.isEmpty()) {

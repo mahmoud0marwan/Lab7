@@ -9,7 +9,7 @@ public class Course {
     String description;
     List<Lesson> lessons;
     List<Student> students;
-
+    private static StudentManager studentManager;
     public Course(String courseId, String instructorId, String title, String description) {
         this.courseId = courseId;
         this.instructorId = instructorId;
@@ -17,6 +17,10 @@ public class Course {
         this.description = description;
         this.lessons = new ArrayList<>();
         this.students = new ArrayList<>();
+    }
+
+    public static void setStudentManager(StudentManager studentManager) {
+        Course.studentManager = studentManager;
     }
 
     public void addLesson(Lesson lesson) {
@@ -36,10 +40,12 @@ public class Course {
     }
 
     public void enrollStudent(String studentId) {
+
         for (Student s : students) {
             if (s.getUserId().equals(studentId)) return ;
         }
-        students.add(new Student(studentId));
+        students.add((Student)studentManager.db.getUserById(studentId));
+
     }
 
     public Lesson getLessonById(String lessonId) {
@@ -74,15 +80,20 @@ public class Course {
         return students;
     }
 
-   /* public Lesson getLessonById(String lessonId) {
-        if (lessons == null) return null;
+    public void setTitle(String title) {
+        this.title=title;
+    }
 
-        for (Lesson lesson : lessons) {
-            if (lesson.getLessonId().equals(lessonId)) {
-                return lesson;
-            }
+    public void setDescription(String description) {
+        this.description=description;
+    }
+    public boolean isEnrolled(String studentId)
+    {
+        for(int i=0;i<students.size();i++)
+        {
+            if (students.get(i).getUserId().equals(studentId))
+                return true;
         }
-        return null;
-    }*/
-
+        return false;
+    }
 }

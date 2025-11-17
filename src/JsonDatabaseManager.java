@@ -127,14 +127,4 @@ public class JsonDatabaseManager {
     }
 
 }
-public User getUserById(String userId) {
-    List<User> users = loadUsers();
-
-    for (User u : users) {
-        if (u.getUserId().equals(userId)) {
-            return u;
-        }
-    }
-    return null;
-}
 
